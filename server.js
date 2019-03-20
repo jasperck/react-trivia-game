@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require('express');
 const bodyParser = require('body-parser');
 const Twilio = require('twilio');
@@ -151,6 +152,23 @@ app.post('/api/receive-sms', (req, res) => {
   message.body('Congrats! you just won the game!');
 
   return res.end(twiml.toString());
-})
+});
+
+const public_path = '/';
+const output_path = path.resolve(process.cwd(), 'build');
+
+app.use(
+  path.join(public_path, 'public'),
+  express.static(path.join(__dirname, '/public'))
+);
+
+app.use(
+  path.join(public_path, 'static'),
+  express.static(path.join(output_path, '/static'))
+);
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(output_path, "index.html"));
+});
 
 app.listen(8001, () => console.log('server listening on 8001'));
